@@ -471,11 +471,11 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
 
 
     if ([self.subtitle length]) {
+        [self.contentLabel sizeToFit];
         self.contentLabel.frame = CGRectMake(self.textSpaceLeft,
                                              self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 5.0,
                                              screenWidth - padding - self.textSpaceLeft - self.textSpaceRight,
-                                             0.0);
-        [self.contentLabel sizeToFit];
+                                             self.contentLabel.frame.size.height);
 
         currentHeight = self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height;
     } else {
