@@ -15,6 +15,7 @@
         "shadowOffsetX": 0,
         "shadowOffsetY": -1,
         "textColor": "#FFFFFF",
+        "textAlign": "left",
         "titleFontSize": 14,
         "backgroundColor": "#76CF67",
         "backgroundAlpha": 0.8
@@ -35,8 +36,10 @@
         "shadowOffsetX": 0,
         "shadowOffsetY": 1,
         "textColor": "#727C83",
+        "textAlign": "left",
         "titleFontSize": 14,
-        "backgroundColor": "#D4DDDF"
+        "backgroundColor": "#D4DDDF",
+        "backgroundAlpha": 0.8
     },
     "warning": {
         "backgroundImageName": "NotificationBackgroundWarning.png",
@@ -54,8 +57,10 @@
         "shadowOffsetX": 0,
         "shadowOffsetY": 1,
         "textColor": "#484638",
+        "textAlign": "left",
         "titleFontSize": 14,
-        "backgroundColor": "#DAC43C"
+        "backgroundColor": "#DAC43C",
+        "backgroundAlpha": 0.8
     },
     "error": {
         "backgroundImageName": "NotificationBackgroundError.png",
@@ -73,7 +78,9 @@
         "shadowOffsetX": 0,
         "shadowOffsetY": -1,
         "textColor": "#FFFFFF",
+        "textAlign": "left",
         "titleFontSize": 14,
-        "backgroundColor": "#DD3B41"
+        "backgroundColor": "#DD3B41",
+        "backgroundAlpha": 0.8
     }
 }

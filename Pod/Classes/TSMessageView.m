@@ -181,28 +181,39 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
             _backgroundImageView = [[UIImageView alloc] initWithImage:backgroundImage];
             self.backgroundImageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
             [self addSubview:self.backgroundImageView];
-        }
-        else
-        {
+        } else if ([current valueForKey:@"blur"]) {
             // On iOS 7 and above use a blur layer instead (not yet finished)
             _backgroundBlurView = [[TSBlurView alloc] init];
             self.backgroundBlurView.autoresizingMask = (UIViewAutoresizingFlexibleWidth);
             self.backgroundBlurView.blurTintColor = [UIColor colorWithHexString:current[@"backgroundColor"]];
             [self addSubview:self.backgroundBlurView];
+        } else {
+            UIColor *backgroundColor = [UIColor colorWithHexString:current[@"backgroundColor"]];
+            CGFloat red = 0, green = 0, blue = 0;
+            [backgroundColor getRed:&red green:&green blue:&blue alpha:0];
+            NSNumber *alphaValue = current[@"backgroundAlpha"];
+            UIColor *backgroundColorWithOpacity = [UIColor colorWithRed:red green:green blue:blue alpha:alphaValue ? alphaValue.floatValue:1.0f];
+
+            self.backgroundColor = backgroundColorWithOpacity;
         }
-        
+
         UIColor *fontColor = [UIColor colorWithHexString:[current valueForKey:@"textColor"]
                                                    alpha:1.0];
-        
-        
-        self.textSpaceLeft = 2 * padding;
-        if (image) self.textSpaceLeft += image.size.width + 2 * padding;
-        
+
+
+        self.textSpaceLeft = padding;
+        if (image) {
+            self.textSpaceLeft += image.size.width + padding;
+        }
+
+        NSTextAlignment textAlignment = [self textAlignmentValueForStyle:current];
+
         // Set up title label
         _titleLabel = [[UILabel alloc] init];
         [self.titleLabel setText:title];
         [self.titleLabel setTextColor:fontColor];
         [self.titleLabel setBackgroundColor:[UIColor clearColor]];
+        self.titleLabel.textAlignment = textAlignment;
         CGFloat fontSize = [[current valueForKey:@"titleFontSize"] floatValue];
         NSString *fontName = [current valueForKey:@"titleFontName"];
         if (fontName != nil) {
@@ -228,6 +239,7 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
             {
                 contentTextColor = fontColor;
             }
+            self.contentLabel.textAlignment = textAlignment;
             [self.contentLabel setTextColor:contentTextColor];
             [self.contentLabel setBackgroundColor:[UIColor clearColor]];
             CGFloat fontSize = [[current valueForKey:@"contentFontSize"] floatValue];
@@ -364,27 +376,45 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
     return self;
 }
 
+- (NSTextAlignment)textAlignmentValueForStyle:(NSDictionary *)dictionary
+{
+    static NSString *const kAATextAlignValueLeft = @"left";
+    static NSString *const kAATextAlignValueRight = @"right";
+    static NSString *const kAATextAlignValueCenter = @"center";
+
+    NSString *value = dictionary[@"textAlign"];
+
+    if ([value isEqualToString:kAATextAlignValueLeft]) {
+        return NSTextAlignmentLeft;
+    } else if ([value isEqualToString:kAATextAlignValueCenter]) {
+        return NSTextAlignmentCenter;
+    } else if ([value isEqualToString:kAATextAlignValueRight]) {
+        return NSTextAlignmentRight;
+    }
+
+    return NSTextAlignmentLeft;
+}
 
 - (CGFloat)updateHeightOfMessageView
 {
     CGFloat currentHeight;
     CGFloat screenWidth = self.viewController.view.bounds.size.width;
     CGFloat padding = [self padding];
-    
+
+    [self.titleLabel sizeToFit];
     self.titleLabel.frame = CGRectMake(self.textSpaceLeft,
                                        padding,
                                        screenWidth - padding - self.textSpaceLeft - self.textSpaceRight,
-                                       0.0);
-    [self.titleLabel sizeToFit];
-    
-    if ([self.subtitle length])
-    {
+                                       self.titleLabel.frame.size.height);
+
+
+    if ([self.subtitle length]) {
+        [self.contentLabel sizeToFit];
         self.contentLabel.frame = CGRectMake(self.textSpaceLeft,
                                              self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 5.0,
                                              screenWidth - padding - self.textSpaceLeft - self.textSpaceRight,
-                                             0.0);
-        [self.contentLabel sizeToFit];
-        
+                                             self.contentLabel.frame.size.height);
+
         currentHeight = self.contentLabel.frame.origin.y + self.contentLabel.frame.size.height;
     }
     else
